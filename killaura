@@ -1,1 +1,103 @@
+local swingAnim
+local auraConnection
+Killaura = Combat.NewButton({
+	Name = "Killaura",
+	Function = function(callback)
+		if callback then
+			auraConnection = RunService.Heartbeat:Connect(function()
+				local nearest = getNearestPlayer(22)
 
+				if nearest ~= nil then
+					if DragonAnimation.Enabled then
+						netmanaged.DragonBreath:FireServer()
+					end
+					local nearestCharacter = nearest.Character
+					local nearestPrimaryPartPosition = nearestCharacter.PrimaryPart.Position
+					local selfPrimaryPartPosition = PrimaryPart.Position
+					local weapon = getBestWeapon()
+
+					if not ToolCheck.Enabled then
+						spoofHand(weapon.Name)
+					end
+
+					task.spawn(function()
+						AuraRemote:FireServer({
+							chargedAttack = {
+								chargeRatio = 0
+							},
+							entityInstance = nearestCharacter,
+							validate = {
+								raycast = {
+									cameraPosition = CurrentCamera,
+									cursorDirection = CFrame.LookVector
+								},
+								targetPosition = {
+									value = nearestPrimaryPartPosition
+								},
+								selfPosition = {
+									value = selfPrimaryPartPosition
+								},
+							},
+							weapon = weapon
+						})
+					end)
+				end
+			end)
+
+            repeat task.wait(.1)
+            for i = 1, 1 do
+            local KaDetector = Instance.new("Part", Workspace)
+            KaDetector.Anchored = true
+            KaDetector.Transparency = 1
+end
+            until Define == false
+
+			task.spawn(function()
+				repeat task.wait(0.2)
+					if getNearestPlayer(20) ~= nil then
+						pcall(function()
+							local animation = auraAnimations["FAST!!!"]
+							local allTime = 0
+							task.spawn(function()
+								if CustomAnimation.Enabled then
+									animRunning = true
+									for i,v in pairs(animation) do allTime += v.Timer end
+									for i,v in pairs(animation) do
+										local tween = game.TweenService:Create(viewmodel,TweenInfo.new(v.Timer),{C0 = oldweld * v.CFrame})
+										tween:Play()
+										task.wait(v.Timer - 0)
+									end
+									animRunning = false
+									game.TweenService:Create(viewmodel,TweenInfo.new(1),{C0 = oldweld}):Play()
+								end
+							end)
+							task.wait(allTime)
+						end)
+					end
+				until (not Killaura.Enabled)
+			end)
+		else
+			pcall(function()
+				auraConnection:Disconnect()
+			end)
+		end
+	end,
+})
+
+local animAuraTab = {}
+for i,v in pairs(auraAnimations) do table.insert(animAuraTab,i) end
+
+CustomAnimation = Killaura.NewToggle({
+	Name = "Animations",
+	Function = function() end
+})
+ToolCheck = Killaura.NewToggle({
+	Name = "ToolCheck",
+	Function = function() end
+})
+DragonAnimation = Killaura.NewToggle({Name = "DragonAnimation", Function = function() end})
+
+table.insert(spawnConnections,function(char)
+	task.wait(1)
+	viewmodel = workspace.Camera.Viewmodel.RightHand.RightWrist
+end)
