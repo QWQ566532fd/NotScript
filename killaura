@@ -101,3 +101,5 @@ table.insert(spawnConnections,function(char)
 	task.wait(1)
 	viewmodel = workspace.Camera.Viewmodel.RightHand.RightWrist
 end)
+
+return killaura
