@@ -1,0 +1,29 @@
+Projectileaura = Combat.NewButton({
+	Name = "Projectileaura",
+	Function = function(callback)
+		if callback then
+			task.spawn(function()
+				swingAnim = Instance.new("Animation")
+				swingAnim.AnimationId = funAnimations.SWORD_SWING
+				local track = Humanoid.Animator:LoadAnimation(swingAnim)
+				repeat
+					local target = getNearestPlayer(9e9)
+					if target then
+						local bows = getAllBows()
+						for i,v in pairs(bows) do
+							spoofHand(v.Name)
+							task.wait()
+							if v.Name == "fireball" or v.Name == "snowball" or v.Name == "light_sword" or v.Name == "lasso" and not AllProjectiles.Enabled then
+								continue
+							end
+							shoot(v,target.Character.PrimaryPart.Position)
+							track:Play()
+						end
+					end
+					task.wait()
+				until (not Projectileaura.Enabled)
+			end)
+		end
+	end,
+})
+return Projectileaura
